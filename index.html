@@ -58,6 +58,10 @@
                 <label for="fileContent">File Content</label>
                 <textarea class="form-control" id="fileContent" rows="3" placeholder="Enter file content"></textarea>
             </div>
+            <div class="form-group">
+                <label for="branchName">Branch Name</label>
+                <input type="text" class="form-control" id="branchName" placeholder="Enter branch name (default: main)" value="main">
+            </div>
             <button type="button" class="btn btn-primary" id="saveData">Save Data</button>
         </form>
     </div>
@@ -84,9 +88,10 @@
             document.querySelector('#saveData').addEventListener('click', function () {
                 const fileName = document.querySelector('#fileName').value;
                 const fileContent = document.querySelector('#fileContent').value;
+                const branchName = document.querySelector('#branchName').value || 'main';
 
                 if (fileName && fileContent) {
-                    saveData(fileName, fileContent).then(function (result) {
+                    saveData(fileName, fileContent, branchName).then(function (result) {
                         console.log(result);
                         alert('Data saved successfully!');
                     }).catch(function (error) {
@@ -103,6 +108,80 @@
             document.querySelector('#login').innerHTML = 'Log In / Register';
             document.querySelector('#result').innerHTML = '';
         });
+    </script>
+
+    <script>
+        async function getData(mypath = '') {
+            let user = netlifyIdentity.currentUser();
+            let token = user.token.access_token;
+            var url = "/.netlify/git/github/contents/" + mypath;
+            var bearer = 'Bearer ' + token;
+
+            return fetch(url, {
+                method: 'GET',
+                withCredentials: true,
+                credentials: 'include',
+                headers: {
+                    'Authorization': bearer,
+                    'Content-Type': 'application/json'
+                }
+            }).then(resp => {
+                return resp.json();
+            }).then(data => {
+                if (data.code == 400) {
+                    netlifyIdentity.refresh().then(function (token) {
+                        getData(mypath);
+                    });
+                } else {
+                    data.content = atob(data.content);
+                    return data;
+                }
+            }).catch(error => {
+                return error;
+            });
+        }
+
+        async function saveData(mypath, data, branch) {
+            return getData(mypath).then(function (curfile) {
+                let user = netlifyIdentity.currentUser();
+                let token = user.token.access_token;
+                let opts = {
+                    path: mypath,
+                    message: "initial commit",
+                    content: btoa(data),
+                    branch: branch,
+                    committer: { name: "Dashpilot", email: "support@dashpilot.com" },
+                };
+                if (typeof curfile !== 'undefined') {
+                    opts.sha = curfile.sha;
+                }
+
+                var url = "/.netlify/git/github/contents/" + mypath;
+                var bearer = 'Bearer ' + token;
+                return fetch(url, {
+                    body: JSON.stringify(opts),
+                    method: 'PUT',
+                    withCredentials: true,
+                    credentials: 'include',
+                    headers: {
+                        'Authorization': bearer,
+                        'Content-Type': 'application/json'
+                    }
+                }).then(resp => {
+                    return resp.json();
+                }).then(data => {
+                    if (data.code == 400) {
+                        netlifyIdentity.refresh().then(function (token) {
+                            saveData(mypath, data, branch);
+                        });
+                    } else {
+                        return data;
+                    }
+                }).catch(error => this.setState({
+                    message: 'Error: ' + error
+                }));
+            });
+        }
     </script>
 </body>
 
