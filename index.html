@@ -72,7 +72,7 @@
         netlifyIdentity.on('login', function(user) {
             document.querySelector('#login').innerHTML = 'Log Out'
 
-            listRepoContents().then(function(result) {
+            listRepoContentsRecursive().then(function(result) {
                 console.log(result)
 
                 let fileListContainer = document.querySelector('#file-list')
