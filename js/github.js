@@ -1,7 +1,7 @@
-async function listRepoContents() {
+async function listRepoContents(path = '') {
     let user = netlifyIdentity.currentUser()
     let token = user.token.access_token
-    var url = "/.netlify/git/github/contents/"
+    var url = "/.netlify/git/github/contents/" + path
     var bearer = 'Bearer ' + token
 
     return fetch(url, {
@@ -17,7 +17,7 @@ async function listRepoContents() {
         }).then(data => {
             if (data.code == 400) {
                 return netlifyIdentity.refresh().then(function(token) {
-                    return listRepoContents()
+                    return listRepoContents(path)
                 })
             } else {
                 return data
@@ -26,6 +26,21 @@ async function listRepoContents() {
         .catch(error => {
             return error
         })
+}
+
+async function listRepoContentsRecursive(path = '') {
+    let contents = await listRepoContents(path)
+    let allContents = []
+
+    for (let item of contents) {
+        allContents.push(item)
+        if (item.type === 'dir') {
+            let subContents = await listRepoContentsRecursive(item.path)
+            allContents = allContents.concat(subContents)
+        }
+    }
+
+    return allContents
 }
 
 async function getData(mypath = '') {
