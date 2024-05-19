@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    <div class="container" id="result"></div>
+    <div class="container" id="file-list"></div>
 
     <div class="container">
         <h5>Save Data to Repository</h5>
@@ -72,15 +72,20 @@
         netlifyIdentity.on('login', function(user) {
             document.querySelector('#login').innerHTML = 'Log Out'
 
-            getData('README.md').then(function(result) {
+            listRepoContents().then(function(result) {
                 console.log(result)
 
-                let data = result.content
+                let fileListContainer = document.querySelector('#file-list')
+                fileListContainer.innerHTML = '<h5>Repository Contents</h5>'
+                let ul = document.createElement('ul')
 
-                var converter = new showdown.Converter(),
-                    html = converter.makeHtml(data)
+                result.forEach(function(item) {
+                    let li = document.createElement('li')
+                    li.textContent = item.path
+                    ul.appendChild(li)
+                })
 
-                document.querySelector('#result').innerHTML = html
+                fileListContainer.appendChild(ul)
             })
         })
 

@@ -1,5 +1,34 @@
-async function getData(mypath = '') {
+async function listRepoContents() {
+    let user = netlifyIdentity.currentUser()
+    let token = user.token.access_token
+    var url = "/.netlify/git/github/contents/"
+    var bearer = 'Bearer ' + token
 
+    return fetch(url, {
+            method: 'GET',
+            withCredentials: true,
+            credentials: 'include',
+            headers: {
+                'Authorization': bearer,
+                'Content-Type': 'application/json'
+            }
+        }).then(resp => {
+            return resp.json()
+        }).then(data => {
+            if (data.code == 400) {
+                return netlifyIdentity.refresh().then(function(token) {
+                    return listRepoContents()
+                })
+            } else {
+                return data
+            }
+        })
+        .catch(error => {
+            return error
+        })
+}
+
+async function getData(mypath = '') {
     let user = netlifyIdentity.currentUser()
     let token = user.token.access_token
     var url = "/.netlify/git/github/contents/" + mypath
@@ -16,13 +45,10 @@ async function getData(mypath = '') {
         }).then(resp => {
             return resp.json()
         }).then(data => {
-
             if (data.code == 400) {
-
-                netlifyIdentity.refresh().then(function(token) {
-                    getData(mypath)
+                return netlifyIdentity.refresh().then(function(token) {
+                    return getData(mypath)
                 })
-
             } else {
                 // base64 decode content
                 data.content = atob(data.content)
@@ -32,13 +58,10 @@ async function getData(mypath = '') {
         .catch(error => {
             return error
         })
-
 }
 
 async function saveData(mypath, data) {
-
     return getData(mypath).then(function(curfile) {
-
         let user = netlifyIdentity.currentUser()
         let token = user.token.access_token
         let opts = {
@@ -67,11 +90,9 @@ async function saveData(mypath, data) {
                 return resp.json()
             }).then(data => {
                 if (data.code == 400) {
-
-                    netlifyIdentity.refresh().then(function(token) {
-                        saveData(mypath)
+                    return netlifyIdentity.refresh().then(function(token) {
+                        return saveData(mypath, data)
                     })
-
                 } else {
                     return data
                 }
@@ -79,7 +100,5 @@ async function saveData(mypath, data) {
             .catch(error => this.setState({
                 message: 'Error: ' + error
             }))
-
     })
-
 }
