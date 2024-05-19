@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>Netlify Identity and Git Gateway Example</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
@@ -13,12 +13,12 @@
             width: 320px;
             margin: 0 auto;
         }
-        
+
         .container {
             margin-top: 50px;
             margin-bottom: 100px;
         }
-        
+
         button {
             margin-top: 25px;
         }
@@ -49,37 +49,64 @@
 
     <div class="container" id="result"></div>
 
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Save Data to GitHub</h5>
+                <form id="dataForm">
+                    <div class="form-group">
+                        <label for="filePath">File Path</label>
+                        <input type="text" class="form-control" id="filePath" placeholder="Enter file path (e.g., newfile.txt)">
+                    </div>
+                    <div class="form-group">
+                        <label for="fileContent">File Content</label>
+                        <textarea class="form-control" id="fileContent" rows="3" placeholder="Enter file content"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Data</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
-        document.querySelector('#login').addEventListener('click', function() {
-            netlifyIdentity.open()
-        })
+        document.querySelector('#login').addEventListener('click', function () {
+            netlifyIdentity.open();
+        });
 
-        netlifyIdentity.on('login', function(user) {
+        netlifyIdentity.on('login', function (user) {
+            document.querySelector('#login').innerHTML = 'Log Out';
 
-            document.querySelector('#login').innerHTML = 'Log Out'
-
-            getData('README.md').then(function(result) {
-
-                console.log(result)
-
-                let data = result.content
-
-                var converter = new showdown.Converter(),
-                    html = converter.makeHtml(data)
-
-                document.querySelector('#result').innerHTML = html
-            })
-
-            // save data example
-            /*
-            saveData('newfile.txt', 'Some data').then(function(result){
+            getData('README.md').then(function (result) {
                 console.log(result);
+
+                let data = result.content;
+                var converter = new showdown.Converter(),
+                    html = converter.makeHtml(data);
+
+                document.querySelector('#result').innerHTML = html;
             });
-            */
 
-        })
+            document.querySelector('#dataForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                let filePath = document.querySelector('#filePath').value;
+                let fileContent = document.querySelector('#fileContent').value;
+
+                saveData(filePath, fileContent).then(function (result) {
+                    console.log(result);
+                    alert('Data saved successfully!');
+                }).catch(function (error) {
+                    console.error(error);
+                    alert('Failed to save data. Please try again.');
+                });
+            });
+        });
+
+        netlifyIdentity.on('logout', function () {
+            document.querySelector('#login').innerHTML = 'Log In / Register';
+            document.querySelector('#result').innerHTML = '';
+        });
     </script>
-
 
 </body>
 
