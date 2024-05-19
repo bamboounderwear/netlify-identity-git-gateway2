@@ -72,13 +72,16 @@
         netlifyIdentity.on('login', function(user) {
             document.querySelector('#login').innerHTML = 'Log Out'
 
-            getData('README.md').then(function(result) {
+            getData().then(function(result) {
                 console.log(result)
 
-                let data = result.content
+                let data = result
 
-                var converter = new showdown.Converter(),
-                    html = converter.makeHtml(data)
+                let html = '<ul>'
+                data.forEach(function(file) {
+                    html += `<li>${file.name}</li>`
+                })
+                html += '</ul>'
 
                 document.querySelector('#result').innerHTML = html
             })
