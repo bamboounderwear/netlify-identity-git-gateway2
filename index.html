@@ -72,7 +72,7 @@
         netlifyIdentity.on('login', function(user) {
             document.querySelector('#login').innerHTML = 'Log Out'
 
-            getData().then(function(result) {
+            getData('README.md').then(function(result) {
                 console.log(result)
 
                 let data = result.content
