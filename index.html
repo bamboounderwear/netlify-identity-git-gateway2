@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Netlify Identity and Git Gateway Example</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+
     <style>
         .wrapper {
             width: 320px;
             margin: 0 auto;
         }
+        
         .container {
             margin-top: 50px;
             margin-bottom: 100px;
         }
+        
         button {
             margin-top: 25px;
         }
     </style>
+
     <!-- Netlify Identity Widget -->
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
     <!-- Github -->
     <script type="text/javascript" src="js/github.js"></script>
+
     <!-- Markdown parser, just for this example -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+
 </head>
+
 <body>
+
     <div class="wrapper mt-5">
         <div class="card">
             <div class="card-body text-center">
@@ -35,64 +46,60 @@
             </div>
         </div>
     </div>
+
     <div class="container" id="result"></div>
 
-    <div class="container mt-5">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title text-center">Save Data</h5>
-                <form id="saveDataForm">
-                    <div class="form-group">
-                        <label for="filePath">File Path:</label>
-                        <input type="text" class="form-control" id="filePath" placeholder="Enter file path (e.g., newfile.txt)">
-                    </div>
-                    <div class="form-group">
-                        <label for="fileContent">Content:</label>
-                        <textarea class="form-control" id="fileContent" rows="5" placeholder="Enter file content"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Save Data</button>
-                </form>
+    <div class="container">
+        <h5>Save Data to Repository</h5>
+        <form id="saveDataForm">
+            <div class="form-group">
+                <label for="filePath">File Path</label>
+                <input type="text" class="form-control" id="filePath" placeholder="Enter file path">
             </div>
-        </div>
+            <div class="form-group">
+                <label for="fileContent">File Content</label>
+                <textarea class="form-control" id="fileContent" rows="3" placeholder="Enter file content"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Data</button>
+        </form>
     </div>
 
     <script>
         document.querySelector('#login').addEventListener('click', function() {
-            netlifyIdentity.open();
-        });
+            netlifyIdentity.open()
+        })
 
         netlifyIdentity.on('login', function(user) {
-            document.querySelector('#login').innerHTML = 'Log Out';
+            document.querySelector('#login').innerHTML = 'Log Out'
 
             getData('README.md').then(function(result) {
-                console.log(result);
+                console.log(result)
 
-                let data = result.content;
+                let data = result.content
+
                 var converter = new showdown.Converter(),
-                    html = converter.makeHtml(data);
+                    html = converter.makeHtml(data)
 
-                document.querySelector('#result').innerHTML = html;
-            });
+                document.querySelector('#result').innerHTML = html
+            })
+        })
 
-            document.querySelector('#saveDataForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                let filePath = document.querySelector('#filePath').value;
-                let fileContent = document.querySelector('#fileContent').value;
+        document.querySelector('#saveDataForm').addEventListener('submit', function(event) {
+            event.preventDefault()
 
-                saveData(filePath, fileContent).then(function(result) {
-                    console.log(result);
-                    alert("Data saved successfully!");
-                }).catch(function(error) {
-                    console.error(error);
-                    alert("Error saving data: " + error.message);
-                });
-            });
-        });
+            const filePath = document.querySelector('#filePath').value
+            const fileContent = document.querySelector('#fileContent').value
 
-        netlifyIdentity.on('logout', function() {
-            document.querySelector('#login').innerHTML = 'Log In / Register';
-            document.querySelector('#result').innerHTML = '';
-        });
+            saveData(filePath, fileContent).then(function(result) {
+                console.log(result)
+                alert('Data saved successfully!')
+            }).catch(function(error) {
+                console.error(error)
+                alert('Failed to save data.')
+            })
+        })
     </script>
+
 </body>
+
 </html>
