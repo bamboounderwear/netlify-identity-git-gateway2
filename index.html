@@ -47,51 +47,63 @@
         </div>
     </div>
 
-    <div class="container" id="result"></div>
-
-    <div class="wrapper mt-5">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Save Data</h5>
-                <textarea class="form-control" id="dataToSave" rows="4" placeholder="Enter data to save..."></textarea>
-                <button class="btn btn-outline-dark w-100 mt-3" id="saveData">Save Data</button>
+    <div class="container">
+        <div id="result"></div>
+        <form id="dataForm">
+            <div class="form-group">
+                <label for="fileName">File Name</label>
+                <input type="text" class="form-control" id="fileName" placeholder="Enter file name">
             </div>
-        </div>
+            <div class="form-group">
+                <label for="fileContent">File Content</label>
+                <textarea class="form-control" id="fileContent" rows="3" placeholder="Enter file content"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" id="saveData">Save Data</button>
+        </form>
     </div>
 
     <script>
-        document.querySelector('#login').addEventListener('click', function() {
+        document.querySelector('#login').addEventListener('click', function () {
             netlifyIdentity.open();
         });
 
-        netlifyIdentity.on('login', function(user) {
+        netlifyIdentity.on('login', function (user) {
             document.querySelector('#login').innerHTML = 'Log Out';
 
-            getData('README.md').then(function(result) {
+            getData('README.md').then(function (result) {
+                console.log(result);
+
                 let data = result.content;
+
                 var converter = new showdown.Converter(),
                     html = converter.makeHtml(data);
 
                 document.querySelector('#result').innerHTML = html;
             });
+
+            document.querySelector('#saveData').addEventListener('click', function () {
+                const fileName = document.querySelector('#fileName').value;
+                const fileContent = document.querySelector('#fileContent').value;
+
+                if (fileName && fileContent) {
+                    saveData(fileName, fileContent).then(function (result) {
+                        console.log(result);
+                        alert('Data saved successfully!');
+                    }).catch(function (error) {
+                        console.error(error);
+                        alert('Error saving data');
+                    });
+                } else {
+                    alert('Please enter both file name and content');
+                }
+            });
         });
 
-        document.querySelector('#saveData').addEventListener('click', function() {
-            let data = document.querySelector('#dataToSave').value;
-            if (data) {
-                saveData('data.txt', data).then(function(result) {
-                    console.log(result);
-                    alert('Data saved successfully!');
-                }).catch(function(error) {
-                    console.error(error);
-                    alert('Failed to save data.');
-                });
-            } else {
-                alert('Please enter some data to save.');
-            }
+        netlifyIdentity.on('logout', function () {
+            document.querySelector('#login').innerHTML = 'Log In / Register';
+            document.querySelector('#result').innerHTML = '';
         });
     </script>
-
 </body>
 
 </html>
