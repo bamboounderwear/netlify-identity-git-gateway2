@@ -75,13 +75,10 @@
             getData().then(function(result) {
                 console.log(result)
 
-                let data = result
+                let data = result.content
 
-                let html = '<ul>'
-                data.forEach(function(file) {
-                    html += `<li>${file.name}</li>`
-                })
-                html += '</ul>'
+                var converter = new showdown.Converter(),
+                    html = converter.makeHtml(data)
 
                 document.querySelector('#result').innerHTML = html
             })
