@@ -117,13 +117,8 @@ async function saveData(mypath, data, isBinary = false) {
             }))
     })
 }
-```
 
-### Updated Event Listener in `index.html`
-
-Update the event listener to pass the `isBinary` flag when uploading an image:
-
-```javascript
+javascript
 document.querySelector('#uploadImageForm').addEventListener('submit', function(event) {
     event.preventDefault()
 
