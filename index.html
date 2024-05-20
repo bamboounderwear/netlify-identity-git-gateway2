@@ -64,6 +64,17 @@
         </form>
     </div>
 
+    <div class="container">
+        <h5>Upload Image to Repository</h5>
+        <form id="uploadImageForm">
+            <div class="form-group">
+                <label for="imageFile">Select Image</label>
+                <input type="file" class="form-control" id="imageFile" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary">Upload Image</button>
+        </form>
+    </div>
+
     <script>
         document.querySelector('#login').addEventListener('click', function() {
             netlifyIdentity.open()
@@ -102,6 +113,31 @@
                 console.error(error)
                 alert('Failed to save data.')
             })
+        })
+
+        document.querySelector('#uploadImageForm').addEventListener('submit', function(event) {
+            event.preventDefault()
+
+            const imageFile = document.querySelector('#imageFile').files[0]
+            if (!imageFile) {
+                alert('Please select an image file.')
+                return
+            }
+
+            const reader = new FileReader()
+            reader.onload = function(e) {
+                const base64Image = e.target.result.split(',')[1] // Remove the base64 header
+                const filePath = `images/${imageFile.name}`
+
+                saveData(filePath, base64Image).then(function(result) {
+                    console.log(result)
+                    alert('Image uploaded successfully!')
+                }).catch(function(error) {
+                    console.error(error)
+                    alert('Failed to upload image.')
+                })
+            }
+            reader.readAsDataURL(imageFile)
         })
     </script>
 
