@@ -75,14 +75,14 @@ async function getData(mypath = '') {
         })
 }
 
-async function saveData(mypath, data) {
+async function saveData(mypath, data, isBinary = false) {
     return getData(mypath).then(function(curfile) {
         let user = netlifyIdentity.currentUser()
         let token = user.token.access_token
         let opts = {
             path: mypath,
             message: "initial commit",
-            content: btoa(data),
+            content: isBinary ? data : btoa(data),
             branch: "main",
             committer: { name: "Dashpilot", email: "support@dashpilot.com" },
         }
@@ -106,7 +106,7 @@ async function saveData(mypath, data) {
             }).then(data => {
                 if (data.code == 400) {
                     return netlifyIdentity.refresh().then(function(token) {
-                        return saveData(mypath, data)
+                        return saveData(mypath, data, isBinary)
                     })
                 } else {
                     return data
@@ -117,3 +117,34 @@ async function saveData(mypath, data) {
             }))
     })
 }
+```
+
+### Updated Event Listener in `index.html`
+
+Update the event listener to pass the `isBinary` flag when uploading an image:
+
+```javascript
+document.querySelector('#uploadImageForm').addEventListener('submit', function(event) {
+    event.preventDefault()
+
+    const imageFile = document.querySelector('#imageFile').files[0]
+    if (!imageFile) {
+        alert('Please select an image file.')
+        return
+    }
+
+    const reader = new FileReader()
+    reader.onload = function(e) {
+        const base64Image = e.target.result.split(',')[1] // Remove the base64 header
+        const filePath = `images/${imageFile.name}`
+
+        saveData(filePath, base64Image, true).then(function(result) {
+            console.log(result)
+            alert('Image uploaded successfully!')
+        }).catch(function(error) {
+            console.error(error)
+            alert('Failed to upload image.')
+        })
+    }
+    reader.readAsDataURL(imageFile)
+})
