@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <title>Netlify Identity and Git Gateway Example</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+
     <style>
         .wrapper {
             width: 320px;
@@ -21,12 +23,20 @@
             margin-top: 25px;
         }
     </style>
+
+    <!-- Netlify Identity Widget -->
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <!-- Github -->
     <script type="text/javascript" src="js/github.js"></script>
+
+    <!-- Markdown parser, just for this example -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+
 </head>
 
 <body>
+
     <div class="wrapper mt-5">
         <div class="card">
             <div class="card-body text-center">
@@ -54,7 +64,47 @@
         </form>
     </div>
 
-    <script src="js/main.js"></script>
+    <script>
+        document.querySelector('#login').addEventListener('click', function() {
+            netlifyIdentity.open()
+        })
+
+        netlifyIdentity.on('login', function(user) {
+            document.querySelector('#login').innerHTML = 'Log Out'
+
+            listRepoContentsRecursive().then(function(result) {
+                console.log(result)
+
+                let fileListContainer = document.querySelector('#file-list')
+                fileListContainer.innerHTML = '<h5>Repository Contents</h5>'
+                let ul = document.createElement('ul')
+
+                result.forEach(function(item) {
+                    let li = document.createElement('li')
+                    li.textContent = item.path
+                    ul.appendChild(li)
+                })
+
+                fileListContainer.appendChild(ul)
+            })
+        })
+
+        document.querySelector('#saveDataForm').addEventListener('submit', function(event) {
+            event.preventDefault()
+
+            const filePath = document.querySelector('#filePath').value
+            const fileContent = document.querySelector('#fileContent').value
+
+            saveData(filePath, fileContent).then(function(result) {
+                console.log(result)
+                alert('Data saved successfully!')
+            }).catch(function(error) {
+                console.error(error)
+                alert('Failed to save data.')
+            })
+        })
+    </script>
+
 </body>
 
 </html>

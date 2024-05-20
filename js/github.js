@@ -1,11 +1,10 @@
 async function listRepoContents(path = '') {
-    const user = netlifyIdentity.currentUser();
-    const token = user.token.access_token;
-    const url = `/.netlify/git/github/contents/${path}`;
-    const bearer = `Bearer ${token}`;
+    let user = netlifyIdentity.currentUser()
+    let token = user.token.access_token
+    var url = "/.netlify/git/github/contents/" + path
+    var bearer = 'Bearer ' + token
 
-    try {
-        const response = await fetch(url, {
+    return fetch(url, {
             method: 'GET',
             withCredentials: true,
             credentials: 'include',
@@ -13,40 +12,44 @@ async function listRepoContents(path = '') {
                 'Authorization': bearer,
                 'Content-Type': 'application/json'
             }
-        });
-        const data = await response.json();
-        if (data.code === 400) {
-            await netlifyIdentity.refresh();
-            return listRepoContents(path);
-        }
-        return data;
-    } catch (error) {
-        console.error('Error fetching repository contents:', error);
-        throw error;
-    }
+        }).then(resp => {
+            return resp.json()
+        }).then(data => {
+            if (data.code == 400) {
+                return netlifyIdentity.refresh().then(function(token) {
+                    return listRepoContents(path)
+                })
+            } else {
+                return data
+            }
+        })
+        .catch(error => {
+            return error
+        })
 }
 
 async function listRepoContentsRecursive(path = '') {
-    const contents = await listRepoContents(path);
-    let allContents = [];
-    for (const item of contents) {
-        allContents.push(item);
+    let contents = await listRepoContents(path)
+    let allContents = []
+
+    for (let item of contents) {
+        allContents.push(item)
         if (item.type === 'dir') {
-            const subContents = await listRepoContentsRecursive(item.path);
-            allContents = allContents.concat(subContents);
+            let subContents = await listRepoContentsRecursive(item.path)
+            allContents = allContents.concat(subContents)
         }
     }
-    return allContents;
+
+    return allContents
 }
 
-async function getData(path = '') {
-    const user = netlifyIdentity.currentUser();
-    const token = user.token.access_token;
-    const url = `/.netlify/git/github/contents/${path}`;
-    const bearer = `Bearer ${token}`;
-
-    try {
-        const response = await fetch(url, {
+async function getData(mypath = '') {
+    let user = netlifyIdentity.currentUser()
+    let token = user.token.access_token
+    var url = "/.netlify/git/github/contents/" + mypath
+    var bearer = 'Bearer ' + token
+    
+    return fetch(url, {
             method: 'GET',
             withCredentials: true,
             credentials: 'include',
@@ -54,56 +57,63 @@ async function getData(path = '') {
                 'Authorization': bearer,
                 'Content-Type': 'application/json'
             }
-        });
-        const data = await response.json();
-        if (data.code === 400) {
-            await netlifyIdentity.refresh();
-            return getData(path);
-        }
-        data.content = atob(data.content);
-        return data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        throw error;
-    }
+        }).then(resp => {
+            return resp.json()
+        }).then(data => {
+            if (data.code == 400) {
+                return netlifyIdentity.refresh().then(function(token) {
+                    return getData(mypath)
+                })
+            } else {
+                // base64 decode content
+                data.content = atob(data.content)
+                return data
+            }
+        })
+        .catch(error => {
+            return error
+        })
 }
 
-async function saveDataToRepository(path, data) {
-    const currentData = await getData(path);
-    const user = netlifyIdentity.currentUser();
-    const token = user.token.access_token;
-    const url = `/.netlify/git/github/contents/${path}`;
-    const bearer = `Bearer ${token}`;
-    const contentData = {
-        path,
-        message: 'initial commit',
-        content: btoa(data),
-        branch: 'main',
-        committer: { name: 'Dashpilot', email: 'support@dashpilot.com' }
-    };
-    if (currentData) {
-        contentData.sha = currentData.sha;
-    }
-
-    try {
-        const response = await fetch(url, {
-            method: 'PUT',
-            withCredentials: true,
-            credentials: 'include',
-            headers: {
-                'Authorization': bearer,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(contentData)
-        });
-        const result = await response.json();
-        if (result.code === 400) {
-            await netlifyIdentity.refresh();
-            return saveDataToRepository(path, data);
+async function saveData(mypath, data) {
+    return getData(mypath).then(function(curfile) {
+        let user = netlifyIdentity.currentUser()
+        let token = user.token.access_token
+        let opts = {
+            path: mypath,
+            message: "initial commit",
+            content: btoa(data),
+            branch: "main",
+            committer: { name: "Dashpilot", email: "support@dashpilot.com" },
         }
-        return result;
-    } catch (error) {
-        console.error('Error saving data:', error);
-        throw error;
-    }
+        if (typeof curfile !== 'undefined') {
+            opts.sha = curfile.sha
+        }
+
+        var url = "/.netlify/git/github/contents/" + mypath
+        var bearer = 'Bearer ' + token
+        return fetch(url, {
+                body: JSON.stringify(opts),
+                method: 'PUT',
+                withCredentials: true,
+                credentials: 'include',
+                headers: {
+                    'Authorization': bearer,
+                    'Content-Type': 'application/json'
+                }
+            }).then(resp => {
+                return resp.json()
+            }).then(data => {
+                if (data.code == 400) {
+                    return netlifyIdentity.refresh().then(function(token) {
+                        return saveData(mypath, data)
+                    })
+                } else {
+                    return data
+                }
+            })
+            .catch(error => this.setState({
+                message: 'Error: ' + error
+            }))
+    })
 }
