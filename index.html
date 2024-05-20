@@ -116,29 +116,40 @@
         })
 
         document.querySelector('#uploadImageForm').addEventListener('submit', function(event) {
-            event.preventDefault()
+    event.preventDefault()
 
-            const imageFile = document.querySelector('#imageFile').files[0]
-            if (!imageFile) {
-                alert('Please select an image file.')
-                return
-            }
+    const imageFile = document.querySelector('#imageFile').files[0]
+    if (!imageFile) {
+        alert('Please select an image file.')
+        return
+    }
 
-            const reader = new FileReader()
-            reader.onload = function(e) {
-                const base64Image = e.target.result.split(',')[1] // Remove the base64 header
-                const filePath = `images/${imageFile.name}`
+    const reader = new FileReader()
+    reader.onload = function(e) {
+        const arrayBuffer = e.target.result
+        const base64Image = arrayBufferToBase64(arrayBuffer)
+        const filePath = `images/${imageFile.name}`
 
-                saveData(filePath, base64Image).then(function(result) {
-                    console.log(result)
-                    alert('Image uploaded successfully!')
-                }).catch(function(error) {
-                    console.error(error)
-                    alert('Failed to upload image.')
-                })
-            }
-            reader.readAsDataURL(imageFile)
+        saveData(filePath, base64Image, true).then(function(result) {
+            console.log(result)
+            alert('Image uploaded successfully!')
+        }).catch(function(error) {
+            console.error(error)
+            alert('Failed to upload image.')
         })
+    }
+    reader.readAsArrayBuffer(imageFile)
+})
+
+function arrayBufferToBase64(buffer) {
+    var binary = ''
+    var bytes = new Uint8Array(buffer)
+    var len = bytes.byteLength
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i])
+    }
+    return btoa(binary)
+}
     </script>
 
 </body>

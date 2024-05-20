@@ -117,29 +117,3 @@ async function saveData(mypath, data, isBinary = false) {
             }))
     })
 }
-
-javascript
-document.querySelector('#uploadImageForm').addEventListener('submit', function(event) {
-    event.preventDefault()
-
-    const imageFile = document.querySelector('#imageFile').files[0]
-    if (!imageFile) {
-        alert('Please select an image file.')
-        return
-    }
-
-    const reader = new FileReader()
-    reader.onload = function(e) {
-        const base64Image = e.target.result.split(',')[1] // Remove the base64 header
-        const filePath = `images/${imageFile.name}`
-
-        saveData(filePath, base64Image, true).then(function(result) {
-            console.log(result)
-            alert('Image uploaded successfully!')
-        }).catch(function(error) {
-            console.error(error)
-            alert('Failed to upload image.')
-        })
-    }
-    reader.readAsDataURL(imageFile)
-})
