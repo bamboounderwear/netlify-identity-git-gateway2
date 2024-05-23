@@ -60,81 +60,96 @@
 
     <script>
         document.querySelector('#login').addEventListener('click', function() {
-            netlifyIdentity.open()
-        })
+            netlifyIdentity.open();
+        });
 
         netlifyIdentity.on('login', function(user) {
-            document.querySelector('#login').innerHTML = 'Log Out'
+            document.querySelector('#login').innerHTML = 'Log Out';
 
             listRepoContentsRecursive().then(function(result) {
-                console.log(result)
+                console.log(result);
 
-                let fileListContainer = document.querySelector('#file-list')
-                fileListContainer.innerHTML = '<h5>Repository Contents</h5>'
-                let ul = document.createElement('ul')
+                let fileListContainer = document.querySelector('#file-list');
+                fileListContainer.innerHTML = '<h5>Repository Contents</h5>';
+                let ul = document.createElement('ul');
 
                 result.forEach(function(item) {
-                    let li = document.createElement('li')
-                    li.textContent = item.path
-                    ul.appendChild(li)
-                })
+                    let li = document.createElement('li');
+                    let link = document.createElement('a');
+                    link.href = '#';
+                    link.textContent = item.path;
+                    link.addEventListener('click', function() {
+                        loadFileForEditing(item.path);
+                    });
+                    li.appendChild(link);
+                    ul.appendChild(li);
+                });
 
-                fileListContainer.appendChild(ul)
-            })
-        })
+                fileListContainer.appendChild(ul);
+            });
+        });
 
         document.querySelector('#saveDataForm').addEventListener('submit', function(event) {
-            event.preventDefault()
+            event.preventDefault();
 
-            const filePath = document.querySelector('#filePath').value
-            const fileContent = document.querySelector('#fileContent').value
+            const filePath = document.querySelector('#filePath').value;
+            const fileContent = document.querySelector('#fileContent').value;
 
             saveData(filePath, fileContent).then(function(result) {
-                console.log(result)
-                alert('Data saved successfully!')
+                console.log(result);
+                alert('Data saved successfully!');
             }).catch(function(error) {
-                console.error(error)
-                alert('Failed to save data.')
-            })
-        })
+                console.error(error);
+                alert('Failed to save data.');
+            });
+        });
 
         document.querySelector('#uploadImageForm').addEventListener('submit', function(event) {
-    event.preventDefault()
+            event.preventDefault();
 
-    const imageFile = document.querySelector('#imageFile').files[0]
-    if (!imageFile) {
-        alert('Please select an image file.')
-        return
-    }
+            const imageFile = document.querySelector('#imageFile').files[0];
+            if (!imageFile) {
+                alert('Please select an image file.');
+                return;
+            }
 
-    const reader = new FileReader()
-    reader.onload = function(e) {
-        const arrayBuffer = e.target.result
-        const base64Image = arrayBufferToBase64(arrayBuffer)
-        const filePath = `images/${imageFile.name}`
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const arrayBuffer = e.target.result;
+                const base64Image = arrayBufferToBase64(arrayBuffer);
+                const filePath = `images/${imageFile.name}`;
 
-        saveData(filePath, base64Image, true).then(function(result) {
-            console.log(result)
-            alert('Image uploaded successfully!')
-        }).catch(function(error) {
-            console.error(error)
-            alert('Failed to upload image.')
-        })
-    }
-    reader.readAsArrayBuffer(imageFile)
-})
+                saveData(filePath, base64Image, true).then(function(result) {
+                    console.log(result);
+                    alert('Image uploaded successfully!');
+                }).catch(function(error) {
+                    console.error(error);
+                    alert('Failed to upload image.');
+                });
+            }
+            reader.readAsArrayBuffer(imageFile);
+        });
 
-function arrayBufferToBase64(buffer) {
-    var binary = ''
-    var bytes = new Uint8Array(buffer)
-    var len = bytes.byteLength
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i])
-    }
-    return btoa(binary)
-}
+        function arrayBufferToBase64(buffer) {
+            var binary = '';
+            var bytes = new Uint8Array(buffer);
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        function loadFileForEditing(filePath) {
+            getData(filePath).then(function(file) {
+                document.querySelector('#filePath').value = filePath;
+                document.querySelector('#fileContent').value = file.content;
+            }).catch(function(error) {
+                console.error(error);
+                alert('Failed to load file for editing.');
+            });
+        }
     </script>
 
 </body>
-
 </html>
