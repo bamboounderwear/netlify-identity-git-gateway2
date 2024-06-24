@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
+    <title>Responsive Landing Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,21 +35,20 @@
             display: flex;
             align-items: center;
             padding: 50px 20px;
+            flex-wrap: wrap;
         }
         .content-section:nth-child(even) {
             background-color: #f5e9cb;
         }
         .content-section img {
-            width: 50%;
+            width: 100%;
             max-width: 300px;
-            margin-right: 20px;
-        }
-        .content-section:nth-child(even) img {
-            margin-right: 0;
-            margin-left: 20px;
+            margin: 10px;
+            flex: 1;
         }
         .content-text {
-            flex: 1;
+            flex: 2;
+            margin: 10px;
         }
         .features {
             text-align: center;
@@ -61,8 +60,9 @@
         }
         .features .feature {
             display: inline-block;
-            width: 30%;
-            margin: 0 1.5%;
+            width: 100%;
+            max-width: 300px;
+            margin: 10px;
         }
         .features .feature img {
             width: 50px;
@@ -73,6 +73,15 @@
             color: #fff;
             text-align: center;
             padding: 20px;
+        }
+        @media (min-width: 768px) {
+            .content-section {
+                flex-wrap: nowrap;
+            }
+            .features .feature {
+                width: 30%;
+                margin: 0 1.5%;
+            }
         }
     </style>
 </head>
