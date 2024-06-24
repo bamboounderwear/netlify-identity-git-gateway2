@@ -16,6 +16,8 @@
     <!-- Markdown parser, just for this example -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
 
+    <!-- Quill Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
 <body>
     <div id="app-content" style="display: none;">
@@ -25,7 +27,10 @@
         <div class="container" id="file-list"></div>
 
         <div class="container">
-            <h5>Save Data to Repository</h5>
+            <h5>Edit File Content</h5>
+            <div id="editor-container" style="display: none;">
+                <div id="editor"></div>
+            </div>
             <form id="saveDataForm">
                 <div class="form-group">
                     <label for="filePath">File Path</label>
@@ -36,6 +41,7 @@
                     <textarea class="form-control" id="fileContent" rows="3" placeholder="Enter file content"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Save Data</button>
+                <button type="button" id="toggleEditor" class="btn btn-secondary">Toggle Editor</button>
             </form>
         </div>
 
@@ -61,6 +67,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
         document.querySelector('#login').addEventListener('click', function() {
             netlifyIdentity.open();
@@ -105,13 +112,37 @@
             location.reload();
         });
 
+        var quill = new Quill('#editor', {
+            theme: 'snow'
+        });
+
+        document.getElementById('toggleEditor').addEventListener('click', function() {
+            var editorContainer = document.getElementById('editor-container');
+            var fileContentTextarea = document.getElementById('fileContent');
+
+            if (editorContainer.style.display === 'none') {
+                editorContainer.style.display = 'block';
+                fileContentTextarea.style.display = 'none';
+                quill.root.innerHTML = fileContentTextarea.value;
+            } else {
+                editorContainer.style.display = 'none';
+                fileContentTextarea.style.display = 'block';
+                fileContentTextarea.value = quill.root.innerHTML;
+            }
+        });
+
         document.querySelector('#saveDataForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
             const filePath = document.querySelector('#filePath').value;
-            const fileContent = document.querySelector('#fileContent').value;
+            const fileContentTextarea = document.querySelector('#fileContent');
+            const fileContent = quill.root.innerHTML;
 
-            saveData(filePath, fileContent).then(function(result) {
+            if (document.getElementById('editor-container').style.display === 'block') {
+                fileContentTextarea.value = fileContent;
+            }
+
+            saveData(filePath, fileContentTextarea.value).then(function(result) {
                 console.log(result);
                 alert('Data saved successfully!');
             }).catch(function(error) {
@@ -160,6 +191,7 @@
             getData(filePath).then(function(file) {
                 document.querySelector('#filePath').value = filePath;
                 document.querySelector('#fileContent').value = file.content;
+                quill.root.innerHTML = file.content;
             }).catch(function(error) {
                 console.error(error);
                 alert('Failed to load file for editing.');
