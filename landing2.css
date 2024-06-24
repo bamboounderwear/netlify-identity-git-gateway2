@@ -156,7 +156,7 @@ body {
   }
 }
 .feature-grid__item--anchorage {
-  background-image: url("https://www.leadingedgesafety.co.uk/ekm/feature-anchorage.jpg");
+  background-image: url("/images/image4.jpg");
 }
 @media screen and (min-width: 1024px) {
   .feature-grid__item--anchorage {
@@ -164,7 +164,7 @@ body {
   }
 }
 .feature-grid__item--kits {
-  background-image: url("https://www.leadingedgesafety.co.uk/ekm/feature-kits.jpg");
+  background-image: url("/images/image5.jpg");
 }
 @media screen and (min-width: 1024px) {
   .feature-grid__item--kits {
@@ -172,7 +172,7 @@ body {
   }
 }
 .feature-grid__item--restraint {
-  background-image: url("https://www.leadingedgesafety.co.uk/ekm/feature-restraint.jpg");
+  background-image: url("/images/image6.jpg");
 }
 @media screen and (min-width: 1024px) {
   .feature-grid__item--restraint {
@@ -180,7 +180,7 @@ body {
   }
 }
 .feature-grid__item--reels {
-  background-image: url("https://www.leadingedgesafety.co.uk/ekm/feature-reels.jpg");
+  background-image: url("/images/image7.jpg");
 }
 @media screen and (min-width: 1024px) {
   .feature-grid__item--reels {
@@ -188,7 +188,7 @@ body {
   }
 }
 .feature-grid__item--lifelines {
-  background-image: url("https://www.leadingedgesafety.co.uk/ekm/feature-lifelines.jpg");
+  background-image: url("/images/image8.jpg");
 }
 @media screen and (min-width: 1024px) {
   .feature-grid__item--lifelines {
@@ -196,7 +196,7 @@ body {
   }
 }
 .feature-grid__item--rescue {
-  background-image: url("https://www.leadingedgesafety.co.uk/ekm/feature-rescue.jpg");
+  background-image: url("/images/image9.jpg");
 }
 @media screen and (min-width: 1024px) {
   .feature-grid__item--rescue {
@@ -204,7 +204,7 @@ body {
   }
 }
 .feature-grid__item--lanyards {
-  background-image: url("https://www.leadingedgesafety.co.uk/ekm/feature-lanyards.jpg");
+  background-image: url("/images/image10.jpg");
 }
 @media screen and (min-width: 1024px) {
   .feature-grid__item--lanyards {
@@ -212,7 +212,7 @@ body {
   }
 }
 .feature-grid__item--tool-lanyards {
-  background-image: url("https://www.leadingedgesafety.co.uk/ekm/feature-tool-lanyards.jpg");
+  background-image: url("/images/image11.jpg");
 }
 @media screen and (min-width: 1024px) {
   .feature-grid__item--tool-lanyards {
