@@ -17,15 +17,62 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
 
 </head>
-
 <body>
+    <div id="app-content" style="display: none;">
+        <div class="container" id="file-list"></div>
+
+        <div class="container">
+            <h5>Save Data to Repository</h5>
+            <form id="saveDataForm">
+                <div class="form-group">
+                    <label for="filePath">File Path</label>
+                    <input type="text" class="form-control" id="filePath" placeholder="Enter file path">
+                </div>
+                <div class="form-group">
+                    <label for="fileContent">File Content</label>
+                    <textarea class="form-control" id="fileContent" rows="3" placeholder="Enter file content"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Data</button>
+            </form>
+        </div>
+
+        <div class="container">
+            <h5>Upload Image to Repository</h5>
+            <form id="uploadImageForm">
+                <div class="form-group">
+                    <label for="imageFile">Select Image</label>
+                    <input type="file" class="form-control" id="imageFile" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary">Upload Image</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="wrapper mt-5">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Log In</h5>
+                <p class="card-text">Log in with Netlify Identity</p>
+                <button class="btn btn-outline-dark w-100" id="login">Log In / Register</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         document.querySelector('#login').addEventListener('click', function() {
             netlifyIdentity.open();
         });
 
+        netlifyIdentity.on('init', function(user) {
+            if (user) {
+                showAppContent();
+            } else {
+                netlifyIdentity.open();
+            }
+        });
+
         netlifyIdentity.on('login', function(user) {
+            showAppContent();
             document.querySelector('#login').innerHTML = 'Log Out';
 
             listRepoContentsRecursive().then(function(result) {
@@ -49,6 +96,10 @@
 
                 fileListContainer.appendChild(ul);
             });
+        });
+
+        netlifyIdentity.on('logout', function() {
+            location.reload();
         });
 
         document.querySelector('#saveDataForm').addEventListener('submit', function(event) {
@@ -111,45 +162,11 @@
                 alert('Failed to load file for editing.');
             });
         }
+
+        function showAppContent() {
+            document.getElementById('app-content').style.display = 'block';
+            document.querySelector('.wrapper').style.display = 'none';
+        }
     </script>
-
-    <div class="wrapper mt-5">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Log In</h5>
-                <p class="card-text">Log in with Netlify Identity</p>
-                <button class="btn btn-outline-dark w-100" id="login">Log In / Register</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="container" id="file-list"></div>
-
-    <div class="container">
-        <h5>Save Data to Repository</h5>
-        <form id="saveDataForm">
-            <div class="form-group">
-                <label for="filePath">File Path</label>
-                <input type="text" class="form-control" id="filePath" placeholder="Enter file path">
-            </div>
-            <div class="form-group">
-                <label for="fileContent">File Content</label>
-                <textarea class="form-control" id="fileContent" rows="3" placeholder="Enter file content"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Save Data</button>
-        </form>
-    </div>
-
-    <div class="container">
-        <h5>Upload Image to Repository</h5>
-        <form id="uploadImageForm">
-            <div class="form-group">
-                <label for="imageFile">Select Image</label>
-                <input type="file" class="form-control" id="imageFile" accept="image/*">
-            </div>
-            <button type="submit" class="btn btn-primary">Upload Image</button>
-        </form>
-    </div>
-
 </body>
 </html>
