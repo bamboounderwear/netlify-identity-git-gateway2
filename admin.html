@@ -51,6 +51,16 @@
         </div>
     </div>
 
+    <div class="wrapper mt-5">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Log In</h5>
+                <p class="card-text">Log in with Netlify Identity</p>
+                <button class="btn btn-outline-dark w-100" id="login">Log In / Register</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.querySelector('#login').addEventListener('click', function() {
             netlifyIdentity.open();
