@@ -16,10 +16,6 @@
     <!-- Markdown parser, just for this example -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
 
-    <!-- Trix Editor CSS and JS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.js"></script>
-
     <style>
         .toolbar {
             margin-bottom: 10px;
@@ -47,9 +43,6 @@
         #context-menu ul li:hover {
             background-color: #f0f0f0;
         }
-        trix-toolbar [data-trix-button-group="file-tools"] {
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -65,13 +58,16 @@
                 <!-- Toolbar buttons can be added here if needed -->
             </div>
             <div id="editor-container" style="display: none;">
-                <trix-editor id="trix-editor" input="fileContent"></trix-editor>
-                <input id="fileContent" type="hidden">
+                <div id="contenteditable-editor" contenteditable="true" style="border: 1px solid #ced4da; padding: 10px; min-height: 200px;"></div>
             </div>
             <form id="saveDataForm">
                 <div class="form-group">
                     <label for="filePath">File Path</label>
                     <input type="text" class="form-control" id="filePath" placeholder="Enter file path">
+                </div>
+                <div class="form-group">
+                    <label for="fileContent">File Content</label>
+                    <textarea class="form-control" id="fileContent" rows="3" placeholder="Enter file content"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Save Data</button>
                 <button type="button" id="toggleEditor" class="btn btn-secondary">Toggle Editor</button>
@@ -158,10 +154,11 @@
             if (editorContainer.style.display === 'none') {
                 editorContainer.style.display = 'block';
                 fileContentTextarea.style.display = 'none';
-                fileContentTextarea.value = document.getElementById('trix-editor').editor.getDocument().toString();
+                document.getElementById('contenteditable-editor').innerHTML = fileContentTextarea.value;
             } else {
                 editorContainer.style.display = 'none';
                 fileContentTextarea.style.display = 'block';
+                fileContentTextarea.value = document.getElementById('contenteditable-editor').innerHTML;
             }
         });
 
@@ -172,7 +169,7 @@
             const fileContentTextarea = document.querySelector('#fileContent');
 
             if (document.getElementById('editor-container').style.display === 'block') {
-                fileContentTextarea.value = document.getElementById('trix-editor').editor.getDocument().toString();
+                fileContentTextarea.value = document.getElementById('contenteditable-editor').innerHTML;
             }
 
             saveData(filePath, fileContentTextarea.value).then(function(result) {
@@ -224,8 +221,7 @@
             getData(filePath).then(function(file) {
                 document.querySelector('#filePath').value = filePath;
                 document.querySelector('#fileContent').value = file.content;
-                document.getElementById('trix-editor').editor.setSelectedRange([0, 0]);
-                document.getElementById('trix-editor').editor.insertHTML(file.content);
+                document.getElementById('contenteditable-editor').innerHTML = file.content;
             }).catch(function(error) {
                 console.error(error);
                 alert('Failed to load file for editing.');
@@ -242,7 +238,7 @@
         });
 
         // Context menu for replacing images and editing links
-        document.getElementById('trix-editor').addEventListener('contextmenu', function(event) {
+        document.getElementById('contenteditable-editor').addEventListener('contextmenu', function(event) {
             if (event.target.tagName === 'IMG' || event.target.tagName === 'A') {
                 event.preventDefault();
                 console.log('Right-clicked on an element'); // Debugging statement
