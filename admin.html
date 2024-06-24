@@ -23,6 +23,26 @@
         .toolbar button {
             margin-right: 5px;
         }
+        #context-menu {
+            display: none;
+            position: absolute;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        }
+        #context-menu ul {
+            list-style: none;
+            padding: 10px;
+            margin: 0;
+        }
+        #context-menu ul li {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        #context-menu ul li:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -35,8 +55,7 @@
         <div class="container">
             <h5>Edit File Content</h5>
             <div class="toolbar">
-                <button class="btn btn-outline-secondary" id="insertImage">Insert Image</button>
-                <button class="btn btn-outline-secondary" id="insertLink">Insert Link</button>
+                <!-- Toolbar buttons can be added here if needed -->
             </div>
             <div id="editor-container" style="display: none;">
                 <div id="contenteditable-editor" contenteditable="true" style="border: 1px solid #ced4da; padding: 10px; min-height: 200px;"></div>
@@ -75,6 +94,12 @@
                 <button class="btn btn-outline-dark w-100" id="login">Log In / Register</button>
             </div>
         </div>
+    </div>
+
+    <div id="context-menu">
+        <ul>
+            <li id="replaceImage">Replace Image</li>
+        </ul>
     </div>
 
     <script>
@@ -211,23 +236,34 @@
             netlifyIdentity.logout();
         });
 
-        // Toolbar buttons functionality
-        document.getElementById('insertImage').addEventListener('click', function() {
-            var imageUrl = prompt('Enter the image URL');
-            if (imageUrl) {
-                document.execCommand('insertImage', false, imageUrl);
+        // Context menu for replacing images
+        document.getElementById('contenteditable-editor').addEventListener('contextmenu', function(event) {
+            if (event.target.tagName === 'IMG') {
+                event.preventDefault();
+                showContextMenu(event.clientX, event.clientY, event.target);
             }
         });
 
-        document.getElementById('insertLink').addEventListener('click', function() {
-            var linkUrl = prompt('Enter the URL');
-            if (linkUrl) {
-                var selectedText = window.getSelection().toString();
-                document.execCommand('createLink', false, linkUrl);
-                var anchor = document.querySelector('a[href="' + linkUrl + '"]');
-                anchor.textContent = selectedText ? selectedText : linkUrl;
-            }
+        document.addEventListener('click', function(event) {
+            document.getElementById('context-menu').style.display = 'none';
         });
+
+        document.getElementById('replaceImage').addEventListener('click', function() {
+            var img = document.getElementById('context-menu').targetElement;
+            var newImageUrl = prompt('Enter the new image URL');
+            if (newImageUrl) {
+                img.src = newImageUrl;
+            }
+            document.getElementById('context-menu').style.display = 'none';
+        });
+
+        function showContextMenu(x, y, targetElement) {
+            var menu = document.getElementById('context-menu');
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.style.display = 'block';
+            menu.targetElement = targetElement;
+        }
     </script>
 </body>
 </html>
