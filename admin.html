@@ -99,6 +99,7 @@
     <div id="context-menu">
         <ul>
             <li id="replaceImage">Replace Image</li>
+            <li id="editLink">Edit Link</li>
         </ul>
     </div>
 
@@ -236,11 +237,11 @@
             netlifyIdentity.logout();
         });
 
-        // Context menu for replacing images
+        // Context menu for replacing images and editing links
         document.getElementById('contenteditable-editor').addEventListener('contextmenu', function(event) {
-            if (event.target.tagName === 'IMG') {
+            if (event.target.tagName === 'IMG' || event.target.tagName === 'A') {
                 event.preventDefault();
-                console.log('Right-clicked on an image'); // Debugging statement
+                console.log('Right-clicked on an element'); // Debugging statement
                 showContextMenu(event.clientX, event.clientY, event.target);
             }
         });
@@ -254,6 +255,15 @@
             var newImageUrl = prompt('Enter the new image URL');
             if (newImageUrl) {
                 img.src = newImageUrl;
+            }
+            document.getElementById('context-menu').style.display = 'none';
+        });
+
+        document.getElementById('editLink').addEventListener('click', function() {
+            var link = document.getElementById('context-menu').targetElement;
+            var newLinkUrl = prompt('Enter the new link URL', link.href);
+            if (newLinkUrl) {
+                link.href = newLinkUrl;
             }
             document.getElementById('context-menu').style.display = 'none';
         });
