@@ -25,7 +25,7 @@
         }
         #context-menu {
             display: none;
-            position: absolute;
+            position: fixed;
             z-index: 1000;
             background: white;
             border: 1px solid #ccc;
@@ -260,8 +260,13 @@
 
         function showContextMenu(x, y, targetElement) {
             var menu = document.getElementById('context-menu');
-            menu.style.left = x + 'px';
-            menu.style.top = y + 'px';
+            var viewportWidth = window.innerWidth;
+            var viewportHeight = window.innerHeight;
+            var menuWidth = menu.offsetWidth;
+            var menuHeight = menu.offsetHeight;
+            
+            menu.style.left = (viewportWidth / 2 - menuWidth / 2) + 'px';
+            menu.style.top = (viewportHeight / 2 - menuHeight / 2) + 'px';
             menu.style.display = 'block';
             menu.targetElement = targetElement;
             console.log('Context menu shown at:', x, y); // Debugging statement
