@@ -148,7 +148,7 @@ body {
   }
 }
 .feature-grid__item--confined-space {
-  background-image: url("https://www.leadingedgesafety.co.uk/ekm/feature-confined-space.jpg");
+  background-image: url("images/image3.jpg");
 }
 @media screen and (min-width: 1024px) {
   .feature-grid__item--confined-space {
