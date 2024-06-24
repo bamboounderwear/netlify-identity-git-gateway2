@@ -15,9 +15,6 @@
 
     <!-- Markdown parser, just for this example -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
-
-    <!-- TinyMCE -->
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 </head>
 <body>
     <div id="app-content" style="display: none;">
@@ -29,7 +26,7 @@
         <div class="container">
             <h5>Edit File Content</h5>
             <div id="editor-container" style="display: none;">
-                <textarea id="tinymce-editor"></textarea>
+                <div id="contenteditable-editor" contenteditable="true" style="border: 1px solid #ced4da; padding: 10px; min-height: 200px;"></div>
             </div>
             <form id="saveDataForm">
                 <div class="form-group">
@@ -111,15 +108,6 @@
             location.reload();
         });
 
-        tinymce.init({
-            selector: '#tinymce-editor',
-            setup: function (editor) {
-                editor.on('init', function () {
-                    editor.setContent('');
-                });
-            }
-        });
-
         document.getElementById('toggleEditor').addEventListener('click', function() {
             var editorContainer = document.getElementById('editor-container');
             var fileContentTextarea = document.getElementById('fileContent');
@@ -127,11 +115,11 @@
             if (editorContainer.style.display === 'none') {
                 editorContainer.style.display = 'block';
                 fileContentTextarea.style.display = 'none';
-                tinymce.get('tinymce-editor').setContent(fileContentTextarea.value);
+                document.getElementById('contenteditable-editor').innerHTML = fileContentTextarea.value;
             } else {
                 editorContainer.style.display = 'none';
                 fileContentTextarea.style.display = 'block';
-                fileContentTextarea.value = tinymce.get('tinymce-editor').getContent();
+                fileContentTextarea.value = document.getElementById('contenteditable-editor').innerHTML;
             }
         });
 
@@ -142,7 +130,7 @@
             const fileContentTextarea = document.querySelector('#fileContent');
 
             if (document.getElementById('editor-container').style.display === 'block') {
-                fileContentTextarea.value = tinymce.get('tinymce-editor').getContent();
+                fileContentTextarea.value = document.getElementById('contenteditable-editor').innerHTML;
             }
 
             saveData(filePath, fileContentTextarea.value).then(function(result) {
@@ -194,7 +182,7 @@
             getData(filePath).then(function(file) {
                 document.querySelector('#filePath').value = filePath;
                 document.querySelector('#fileContent').value = file.content;
-                tinymce.get('tinymce-editor').setContent(file.content);
+                document.getElementById('contenteditable-editor').innerHTML = file.content;
             }).catch(function(error) {
                 console.error(error);
                 alert('Failed to load file for editing.');
