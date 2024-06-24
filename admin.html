@@ -15,6 +15,15 @@
 
     <!-- Markdown parser, just for this example -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+
+    <style>
+        .toolbar {
+            margin-bottom: 10px;
+        }
+        .toolbar button {
+            margin-right: 5px;
+        }
+    </style>
 </head>
 <body>
     <div id="app-content" style="display: none;">
@@ -25,6 +34,10 @@
 
         <div class="container">
             <h5>Edit File Content</h5>
+            <div class="toolbar">
+                <button class="btn btn-outline-secondary" id="insertImage">Insert Image</button>
+                <button class="btn btn-outline-secondary" id="insertLink">Insert Link</button>
+            </div>
             <div id="editor-container" style="display: none;">
                 <div id="contenteditable-editor" contenteditable="true" style="border: 1px solid #ced4da; padding: 10px; min-height: 200px;"></div>
             </div>
@@ -196,6 +209,24 @@
 
         document.querySelector('#logout').addEventListener('click', function() {
             netlifyIdentity.logout();
+        });
+
+        // Toolbar buttons functionality
+        document.getElementById('insertImage').addEventListener('click', function() {
+            var imageUrl = prompt('Enter the image URL');
+            if (imageUrl) {
+                document.execCommand('insertImage', false, imageUrl);
+            }
+        });
+
+        document.getElementById('insertLink').addEventListener('click', function() {
+            var linkUrl = prompt('Enter the URL');
+            if (linkUrl) {
+                var selectedText = window.getSelection().toString();
+                document.execCommand('createLink', false, linkUrl);
+                var anchor = document.querySelector('a[href="' + linkUrl + '"]');
+                anchor.textContent = selectedText ? selectedText : linkUrl;
+            }
         });
     </script>
 </body>
