@@ -240,6 +240,7 @@
         document.getElementById('contenteditable-editor').addEventListener('contextmenu', function(event) {
             if (event.target.tagName === 'IMG') {
                 event.preventDefault();
+                console.log('Right-clicked on an image'); // Debugging statement
                 showContextMenu(event.clientX, event.clientY, event.target);
             }
         });
