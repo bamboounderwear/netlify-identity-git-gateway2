@@ -140,7 +140,7 @@ body {
   }
 }
 .feature-grid__item--tethering {
-  background-image: url("https://www.leadingedgesafety.co.uk/ekm/feature-tethering.jpg");
+  background-image: url("/images/IMAGE2.jpg");
 }
 @media screen and (min-width: 1024px) {
   .feature-grid__item--tethering {
