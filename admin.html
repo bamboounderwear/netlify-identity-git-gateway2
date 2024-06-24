@@ -16,6 +16,11 @@
     <!-- Markdown parser, just for this example -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
 
+    <!-- MediumEditor CSS and JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/medium-editor/5.23.3/css/medium-editor.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/medium-editor/5.23.3/css/themes/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-editor/5.23.3/js/medium-editor.min.js"></script>
+
     <style>
         .toolbar {
             margin-bottom: 10px;
@@ -58,7 +63,7 @@
                 <!-- Toolbar buttons can be added here if needed -->
             </div>
             <div id="editor-container" style="display: none;">
-                <div id="contenteditable-editor" contenteditable="true" style="border: 1px solid #ced4da; padding: 10px; min-height: 200px;"></div>
+                <div id="contenteditable-editor" class="editable" style="border: 1px solid #ced4da; padding: 10px; min-height: 200px;"></div>
             </div>
             <form id="saveDataForm">
                 <div class="form-group">
@@ -235,6 +240,21 @@
 
         document.querySelector('#logout').addEventListener('click', function() {
             netlifyIdentity.logout();
+        });
+
+        // Initialize MediumEditor
+        var editor = new MediumEditor('.editable', {
+            toolbar: {
+                buttons: ['bold', 'italic', 'underline', 'anchor', 'h2', 'h3', 'quote']
+            },
+            anchor: {
+                placeholderText: 'Enter URL',
+                customClassOption: null,
+                customClassOptionText: 'Button',
+                linkValidation: false,
+                targetCheckbox: false,
+                targetCheckboxText: 'Open in new window'
+            }
         });
 
         // Context menu for replacing images and editing links
