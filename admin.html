@@ -19,6 +19,9 @@
 </head>
 <body>
     <div id="app-content" style="display: none;">
+        <div class="container mt-3">
+            <button class="btn btn-outline-dark" id="logout">Log Out</button>
+        </div>
         <div class="container" id="file-list"></div>
 
         <div class="container">
@@ -167,6 +170,10 @@
             document.getElementById('app-content').style.display = 'block';
             document.querySelector('.wrapper').style.display = 'none';
         }
+
+        document.querySelector('#logout').addEventListener('click', function() {
+            netlifyIdentity.logout();
+        });
     </script>
 </body>
 </html>
