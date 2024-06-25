@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
     <link href="admin.css" rel="stylesheet" />
-    <link href="/js/frontsome.css" rel="stylesheet" />
 
     <!-- Netlify Identity Widget -->
     <script type="text/javascript" src="/js/identity.js"></script>
@@ -17,8 +16,8 @@
     <!-- Markdown parser, just for this example -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
 
-    <!-- Frontsome JS -->
-    <script type="text/javascript" src="/js/frontsome.js"></script>
+    <!-- Frontsome CSS -->
+    <link rel="stylesheet" href="js/frontsome.css" />
 
     <style>
         .toolbar {
@@ -110,6 +109,44 @@
             <li id="editLink">Edit Link</li>
         </ul>
     </div>
+
+    <div class="editor_container fade-in" id="editor_container">
+      <div class="wdgt-row wdgt-header">
+        <div class="wdgt-col"><div class="wdgt-title">Edit</div></div>
+        <div class="wdgt-col">
+          <span class="wdgt_close" id="wdgt_close">&times;</span>
+        </div>
+      </div>
+
+      <div id="editor">
+        <div id="welcome_message">
+          <div class="wdgt-alert wdgt-alert-warning">
+            Click on an element to edit it.
+          </div>
+        </div>
+
+        <div id="editor_title" class="editor_input">
+          <input type="text" id="input_title" class="wdgt-form-control" />
+        </div>
+        <div id="editor_text" class="editor_input">
+          <div id="input_text" class="wdgt-form-control"></div>
+        </div>
+
+        <div id="editor_image" class="editor_input">
+          <button class="wdgt-btn-outline" id="btn_image">Choose image</button>
+          <input
+            type="file"
+            id="input_image"
+            class="fileInput"
+            accept="image/png, image/jpeg, image/gif"
+            hidden
+          />
+        </div>
+      </div>
+    </div>
+
+    <script src="js/inline.js"></script>
+    <script src="js/frontsome.js"></script>
 
     <script>
         document.querySelector('#login').addEventListener('click', function() {
@@ -292,7 +329,7 @@
 
         // Frontsome.js integration
         document.addEventListener("DOMContentLoaded", function() {
-            const editor_container = document.querySelector("#editor-container");
+            const editor_container = document.querySelector("#editor_container");
             const welcome_message = document.querySelector("#welcome_message");
 
             const editor_title = document.querySelector("#editor_title");
